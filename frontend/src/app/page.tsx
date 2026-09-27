@@ -1,5 +1,7 @@
 'use client';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8009';
+
 import { useState, useEffect } from 'react';
 
 export default function Home() {
@@ -19,6 +21,7 @@ export default function Home() {
   const [taskId, setTaskId] = useState('');
   const [resultData, setResultData] = useState<any>(null);
   const [message, setMessage] = useState('');
+  const [apiKey, setApiKey] = useState('');
 
   useEffect(() => {
     setKeys({
@@ -32,7 +35,7 @@ export default function Home() {
     if (taskId && (status === 'pending' || status === 'running')) {
       interval = setInterval(async () => {
         try {
-          const res = await fetch(`http://localhost:8009/api/tasks/${taskId}`);
+          const res = await fetch(`${API_BASE}/api/tasks/${taskId}`, { headers: { 'X-API-Key': apiKey } });
           if (res.ok) {
             const data = await res.json();
             setStatus(data.status);
@@ -49,7 +52,7 @@ export default function Home() {
       }, 3000);
     }
     return () => clearInterval(interval);
-  }, [taskId, status]);
+  }, [taskId, status, apiKey]);
 
   const handleKeyChange = (provider: string, val: string) => {
     setKeys(prev => ({...prev, [provider]: val}));
@@ -71,7 +74,7 @@ export default function Home() {
       localStorage.setItem('seo_gemini_key', keys.gemini);
       localStorage.setItem('seo_glm_key', keys.glm);
 
-      const res = await fetch('http://localhost:8009/api/execute', {
+      const res = await fetch(`${API_BASE}/api/execute`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -79,6 +82,7 @@ export default function Home() {
           'X-Anthropic-Key': keys.anthropic,
           'X-Gemini-Key': keys.gemini,
           'X-GLM-Key': keys.glm,
+          'X-API-Key': apiKey,
         },
         body: JSON.stringify({
           task_type: activeTab,
@@ -146,6 +150,8 @@ export default function Home() {
             <div className="form-group"><label>Anthropic (Claude 3.5)</label><input type="password" value={keys.anthropic} onChange={(e) => handleKeyChange('anthropic', e.target.value)} /></div>
             <div className="form-group"><label>Google AI (Gemini 1.5)</label><input type="password" value={keys.gemini} onChange={(e) => handleKeyChange('gemini', e.target.value)} /></div>
             <div className="form-group"><label>ZhipuAI (GLM-4)</label><input type="password" value={keys.glm} onChange={(e) => handleKeyChange('glm', e.target.value)} /></div>
+
+            <div className="form-group" style={{marginTop: '20px'}}><label style={{color: 'var(--primary)'}}>Backend API Key (SEO_API_KEY)</label><input type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="X-API-Key" /></div>
 
             <div className="form-group" style={{marginTop: '20px'}}>
               <label style={{color: 'var(--primary)'}}>Active AI Engine</label>
