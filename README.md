@@ -85,3 +85,7 @@ All errors are structured JSON: `{"error": {"code": "...", "message": "..."}}` �
 - Never commit `.env` (gitignored). `.env.example` ships with dummy placeholders only.
 - `POST /api/settings/keys` stores keys in local SQLite — demo/self-host convenience, not a secrets manager.
 - The website fetcher blocks non-public targets (SSRF guard): private/loopback hosts are refused.
+
+## SEO in production
+
+This repo automates the audit side — rank tracking, technical checks, content gaps. For the managed side, [VisionQuantech's AI SEO services](https://visionquantech.com/service-seo.html) run the same playbook as a done-for-you service, and their [90-day SEO/AEO/GEO blueprint](https://visionquantech.com/blog/seo-aeo-geo-90-day-blueprint.html) documents the full process.
